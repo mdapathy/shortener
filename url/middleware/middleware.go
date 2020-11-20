@@ -13,6 +13,7 @@ type middleware struct {
 	cache tools.CacheStorage
 }
 
+//this class is used to not initialize objects explicitly
 type Middleware interface {
 	NewController() controller.Controller
 }

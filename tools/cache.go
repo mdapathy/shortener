@@ -46,6 +46,7 @@ func (c *cache) GetValue(s string) (string, error) {
 	return string(res), err
 }
 
+//Used after both the redirect and create requests
 func (c *cache) SetValue(s string, s2 string) error {
 	return c.Storage.Set(s, []byte(s2))
 }

@@ -62,7 +62,6 @@ func (c *controller) HandleUriCreate(rw http.ResponseWriter, r *http.Request) {
 	if res == nil && err != nil {
 		tools.WriteJsonBadRequest(rw, err.Error())
 	} else {
-
 		tools.WriteJsonCreated(rw, res)
 	}
 }

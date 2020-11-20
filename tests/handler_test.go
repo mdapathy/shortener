@@ -22,7 +22,7 @@ type testCase struct {
 var (
 	handler http.Handler
 
-	URL = "http://localhost:8080"
+	srv httptest.Server
 
 	testCasesPost = []testCase{
 		{
@@ -35,7 +35,7 @@ var (
 		},
 		{
 			input:      ``,
-			httpStatus: 400,//input should be given to create a link
+			httpStatus: 400, //input should be given to create a link
 		},
 	}
 
@@ -52,7 +52,7 @@ var (
 
 	testCasesDelete = []testCase{
 		{
-			input:      `burggtnjcu81j3f50hgg`, // should be changed for the next run
+			input:      `burn2pvjcu8f0e7r1q3g`, // should be changed for the next run
 			httpStatus: 200,
 		},
 		{
@@ -75,7 +75,7 @@ func TestMain(m *testing.M) {
 	}
 
 	handler = server.Create()
-	srv := httptest.NewServer(handler)
+	srv = *httptest.NewServer(handler)
 	code := m.Run()
 	defer srv.Close()
 	os.Exit(code)
@@ -83,7 +83,7 @@ func TestMain(m *testing.M) {
 
 func TestServerPost(t *testing.T) {
 	for _, tCase := range testCasesPost {
-		res, err := http.Post(fmt.Sprintf("%s/shorten", URL), "application/json", bytes.NewBuffer([]byte(tCase.input)))
+		res, err := http.Post(fmt.Sprintf("%s/shorten", srv.URL), "application/json", bytes.NewBuffer([]byte(tCase.input)))
 		assert.Nil(t, err)
 		assert.NotNil(t, res)
 		assert.Equal(t, tCase.httpStatus, res.StatusCode)
@@ -93,7 +93,7 @@ func TestServerPost(t *testing.T) {
 
 func TestServerGet(t *testing.T) {
 	for _, tCase := range testCasesGet {
-		res, err := http.Get(fmt.Sprintf("%s/url/%s", URL, tCase.input))
+		res, err := http.Get(fmt.Sprintf("%s/url/%s", srv.URL, tCase.input))
 		assert.Nil(t, err)
 		assert.NotNil(t, res)
 		assert.Equal(t, tCase.httpStatus, res.StatusCode)
@@ -106,7 +106,7 @@ func TestServerDelete(t *testing.T) {
 	client := &http.Client{}
 
 	for _, tCase := range testCasesDelete {
-		req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/url/%s", URL, tCase.input), nil)
+		req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/url/%s", srv.URL, tCase.input), nil)
 		if err != nil {
 			t.Errorf("error creating request:%s", err)
 		}
